@@ -1,24 +1,22 @@
--- GUI creation script
-
--- Wait for the player
+-- Variables
 local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+local guiOpen = false
 
 -- Create ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "CustomGui"
+screenGui.Name = "ScriptExecutorGui"
 screenGui.Parent = player:WaitForChild("PlayerGui")
 screenGui.ResetOnSpawn = false
 
--- Create the main frame (for open/close functionality)
+-- Main Frame for buttons
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
 mainFrame.Parent = screenGui
 mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black background
-mainFrame.BorderColor3 = Color3.fromRGB(0, 0, 255) -- Blue border
-mainFrame.BorderSizePixel = 5
-mainFrame.Size = UDim2.new(0, 300, 0, 400)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+mainFrame.BorderColor3 = Color3.fromRGB(0, 255, 255) -- Cyan border
+mainFrame.BorderSizePixel = 3
+mainFrame.Size = UDim2.new(0, 400, 0, 300)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -150) -- Center of the screen
 mainFrame.Visible = false
 
 -- Add UI Corner to make rounded edges
@@ -63,60 +61,15 @@ local function makeDraggable(frame)
 end
 makeDraggable(mainFrame)
 
--- Scrollable UI
-local scrollingFrame = Instance.new("ScrollingFrame")
-scrollingFrame.Size = UDim2.new(1, 0, 1, 0)
-scrollingFrame.CanvasSize = UDim2.new(0, 0, 3, 0) -- Allow scrolling
-scrollingFrame.ScrollBarThickness = 10
-scrollingFrame.Parent = mainFrame
-
--- Add teleport buttons
-local function addButton(name, teleportTo, parent)
-    local button = Instance.new("TextButton")
-    button.Text = name
-    button.Size = UDim2.new(0.9, 0, 0, 50)
-    button.Position = UDim2.new(0.05, 0, 0, 0)
-    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.Font = Enum.Font.SourceSans
-    button.TextSize = 24
-    button.Parent = parent
-
-    button.MouseButton1Click:Connect(function()
-        local target = workspace:FindFirstChild(teleportTo)
-        if target then
-            character:SetPrimaryPartCFrame(target.CFrame)
-        else
-            print("Model not found: " .. teleportTo)
-        end
-    end)
-end
-
--- Adding buttons for teleportation
-addButton("TP to Prison", "Prison_spawn", scrollingFrame)
-addButton("TP to Criminal Base", "Warehouse1", scrollingFrame)
-addButton("Get AK47", "AK-47", scrollingFrame)
-
--- Add Version Info Box
-local versionLabel = Instance.new("TextLabel")
-versionLabel.Text = "v1 Made by brolikewhydide"
-versionLabel.Size = UDim2.new(0.3, 0, 0.05, 0)
-versionLabel.Position = UDim2.new(0.7, 0, 0.95, 0)
-versionLabel.BackgroundTransparency = 1
-versionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-versionLabel.Font = Enum.Font.SourceSans
-versionLabel.TextSize = 14
-versionLabel.Parent = screenGui
-
 -- Open/Close Button
 local toggleButton = Instance.new("TextButton")
 toggleButton.Name = "ToggleButton"
 toggleButton.Parent = screenGui
 toggleButton.Text = "Open"
 toggleButton.Size = UDim2.new(0, 100, 0, 50)
-toggleButton.Position = UDim2.new(0.5, -50, 0.1, 0)
+toggleButton.Position = UDim2.new(0, 10, 0.5, -25) -- Middle-left side
 toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-toggleButton.BorderColor3 = Color3.fromRGB(0, 0, 255)
+toggleButton.BorderColor3 = Color3.fromRGB(0, 255, 255) -- Cyan
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.Font = Enum.Font.SourceSans
 toggleButton.TextSize = 24
@@ -130,3 +83,92 @@ toggleButton.MouseButton1Click:Connect(function()
         toggleButton.Text = "Open"
     end
 end)
+
+-- Create TextBox for inputting loadstring script
+local scriptInput = Instance.new("TextBox")
+scriptInput.Name = "ScriptInput"
+scriptInput.Parent = mainFrame
+scriptInput.Size = UDim2.new(0.9, 0, 0.5, 0)
+scriptInput.Position = UDim2.new(0.05, 0, 0.05, 0)
+scriptInput.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+scriptInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+scriptInput.PlaceholderText = "Type your loadstring script here"
+scriptInput.Font = Enum.Font.SourceSans
+scriptInput.TextSize = 18
+scriptInput.ClearTextOnFocus = false
+scriptInput.MultiLine = true
+
+-- Execute Button
+local executeButton = Instance.new("TextButton")
+executeButton.Name = "ExecuteButton"
+executeButton.Text = "Execute"
+executeButton.Size = UDim2.new(0.45, 0, 0.2, 0)
+executeButton.Position = UDim2.new(0.05, 0, 0.65, 0)
+executeButton.Parent = mainFrame
+executeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+executeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+executeButton.Font = Enum.Font.SourceSans
+executeButton.TextSize = 24
+
+-- Execute script function
+executeButton.MouseButton1Click:Connect(function()
+    local scriptText = scriptInput.Text
+    if scriptText and scriptText ~= "" then
+        local success, err = pcall(function()
+            loadstring(scriptText)()
+        end)
+        if not success then
+            warn("Error executing script: " .. err)
+        end
+    end
+end)
+
+-- Clear Button
+local clearButton = Instance.new("TextButton")
+clearButton.Name = "ClearButton"
+clearButton.Text = "Clear"
+clearButton.Size = UDim2.new(0.45, 0, 0.2, 0)
+clearButton.Position = UDim2.new(0.5, 0, 0.65, 0)
+clearButton.Parent = mainFrame
+clearButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+clearButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+clearButton.Font = Enum.Font.SourceSans
+clearButton.TextSize = 24
+
+-- Clear function
+clearButton.MouseButton1Click:Connect(function()
+    scriptInput.Text = "" -- Clears the text
+end)
+
+-- Copy Button
+local copyButton = Instance.new("TextButton")
+copyButton.Name = "CopyButton"
+copyButton.Text = "Copy"
+copyButton.Size = UDim2.new(0.45, 0, 0.2, 0)
+copyButton.Position = UDim2.new(0.05, 0, 0.85, 0)
+copyButton.Parent = mainFrame
+copyButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+copyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+copyButton.Font = Enum.Font.SourceSans
+copyButton.TextSize = 24
+
+-- Copy function
+copyButton.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard(scriptInput.Text) -- Copies the text to clipboard
+    else
+        warn("Your executor doesn't support clipboard functionality.")
+    end
+end)
+
+-- Add a small text in the bottom right corner
+local versionLabel = Instance.new("TextLabel")
+versionLabel.Text = "Made by browhydide V1"
+versionLabel.Size = UDim2.new(0.2, 0, 0.05, 0)
+versionLabel.Position = UDim2.new(0.8, 0, 0.95, 0)
+versionLabel.BackgroundTransparency = 1
+versionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+versionLabel.Font = Enum.Font.SourceSans
+versionLabel.TextSize = 14
+versionLabel.Parent = screenGui
+
