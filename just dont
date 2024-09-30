@@ -1,0 +1,132 @@
+-- GUI creation script
+
+-- Wait for the player
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CustomGui"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+
+-- Create the main frame (for open/close functionality)
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Parent = screenGui
+mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black background
+mainFrame.BorderColor3 = Color3.fromRGB(0, 0, 255) -- Blue border
+mainFrame.BorderSizePixel = 5
+mainFrame.Size = UDim2.new(0, 300, 0, 400)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+mainFrame.Visible = false
+
+-- Add UI Corner to make rounded edges
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 15)
+uiCorner.Parent = mainFrame
+
+-- Make the frame draggable
+local function makeDraggable(frame)
+    local dragToggle, dragInput, dragStart, startPos
+    local UIS = game:GetService("UserInputService")
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragToggle = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragToggle = false
+                end
+            end)
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if input == dragInput and dragToggle then
+            update(input)
+        end
+    end)
+end
+makeDraggable(mainFrame)
+
+-- Scrollable UI
+local scrollingFrame = Instance.new("ScrollingFrame")
+scrollingFrame.Size = UDim2.new(1, 0, 1, 0)
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 3, 0) -- Allow scrolling
+scrollingFrame.ScrollBarThickness = 10
+scrollingFrame.Parent = mainFrame
+
+-- Add teleport buttons
+local function addButton(name, teleportTo, parent)
+    local button = Instance.new("TextButton")
+    button.Text = name
+    button.Size = UDim2.new(0.9, 0, 0, 50)
+    button.Position = UDim2.new(0.05, 0, 0, 0)
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.SourceSans
+    button.TextSize = 24
+    button.Parent = parent
+
+    button.MouseButton1Click:Connect(function()
+        local target = workspace:FindFirstChild(teleportTo)
+        if target then
+            character:SetPrimaryPartCFrame(target.CFrame)
+        else
+            print("Model not found: " .. teleportTo)
+        end
+    end)
+end
+
+-- Adding buttons for teleportation
+addButton("TP to Prison", "Prison_spawn", scrollingFrame)
+addButton("TP to Criminal Base", "Warehouse1", scrollingFrame)
+addButton("Get AK47", "AK-47", scrollingFrame)
+
+-- Add Version Info Box
+local versionLabel = Instance.new("TextLabel")
+versionLabel.Text = "v1 Made by brolikewhydide"
+versionLabel.Size = UDim2.new(0.3, 0, 0.05, 0)
+versionLabel.Position = UDim2.new(0.7, 0, 0.95, 0)
+versionLabel.BackgroundTransparency = 1
+versionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+versionLabel.Font = Enum.Font.SourceSans
+versionLabel.TextSize = 14
+versionLabel.Parent = screenGui
+
+-- Open/Close Button
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Parent = screenGui
+toggleButton.Text = "Open"
+toggleButton.Size = UDim2.new(0, 100, 0, 50)
+toggleButton.Position = UDim2.new(0.5, -50, 0.1, 0)
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggleButton.BorderColor3 = Color3.fromRGB(0, 0, 255)
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Font = Enum.Font.SourceSans
+toggleButton.TextSize = 24
+
+-- Toggle open/close function
+toggleButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = not mainFrame.Visible
+    if mainFrame.Visible then
+        toggleButton.Text = "Close"
+    else
+        toggleButton.Text = "Open"
+    end
+end)
