@@ -69,10 +69,14 @@ toggleButton.Text = "Open"
 toggleButton.Size = UDim2.new(0, 100, 0, 50)
 toggleButton.Position = UDim2.new(0, 10, 0.5, -25) -- Middle-left side
 toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-toggleButton.BorderColor3 = Color3.fromRGB(0, 255, 255) -- Cyan
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.Font = Enum.Font.SourceSans
 toggleButton.TextSize = 24
+
+-- Remove outline and add UICorner to the open button
+local buttonUICorner = Instance.new("UICorner")
+buttonUICorner.CornerRadius = UDim.new(0, 10)
+buttonUICorner.Parent = toggleButton
 
 -- Toggle open/close function
 toggleButton.MouseButton1Click:Connect(function()
@@ -92,7 +96,7 @@ scriptInput.Size = UDim2.new(0.9, 0, 0.5, 0)
 scriptInput.Position = UDim2.new(0.05, 0, 0.05, 0)
 scriptInput.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 scriptInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-scriptInput.PlaceholderText = "Type your loadstring script here"
+scriptInput.PlaceholderText = "Enter script here" -- Changed this text
 scriptInput.Font = Enum.Font.SourceSans
 scriptInput.TextSize = 18
 scriptInput.ClearTextOnFocus = false
@@ -169,9 +173,20 @@ copyButton.MouseButton1Click:Connect(function()
     end
 end)
 
+-- Add a label for "Darkness Executor" under the buttons
+local executorLabel = Instance.new("TextLabel")
+executorLabel.Text = "Darkness Executor"
+executorLabel.Size = UDim2.new(0.9, 0, 0.1, 0)
+executorLabel.Position = UDim2.new(0.05, 0, 0.85, 0) -- Positioned under the buttons
+executorLabel.BackgroundTransparency = 1
+executorLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+executorLabel.Font = Enum.Font.SourceSans
+executorLabel.TextSize = 18
+executorLabel.Parent = mainFrame
+
 -- Add a small text in the bottom right corner
 local versionLabel = Instance.new("TextLabel")
-versionLabel.Text = "Made by browhydide V1"
+versionLabel.Text = "Made by likebrowhydide V2" -- Updated this text
 versionLabel.Size = UDim2.new(0.2, 0, 0.05, 0)
 versionLabel.Position = UDim2.new(0.8, 0, 0.95, 0)
 versionLabel.BackgroundTransparency = 1
