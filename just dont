@@ -73,10 +73,13 @@ toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.Font = Enum.Font.SourceSans
 toggleButton.TextSize = 24
 
--- Remove outline and add UICorner to the open button
+-- Add UICorner to make the button rounded
 local buttonUICorner = Instance.new("UICorner")
 buttonUICorner.CornerRadius = UDim.new(0, 10)
 buttonUICorner.Parent = toggleButton
+
+-- Make the Open/Close Button draggable
+makeDraggable(toggleButton)
 
 -- Toggle open/close function
 toggleButton.MouseButton1Click:Connect(function()
@@ -126,6 +129,11 @@ executeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 executeButton.Font = Enum.Font.SourceSans
 executeButton.TextSize = 24
 
+-- Add UICorner to Execute Button
+local executeUICorner = Instance.new("UICorner")
+executeUICorner.CornerRadius = UDim.new(0, 10)
+executeUICorner.Parent = executeButton
+
 -- Execute script function
 executeButton.MouseButton1Click:Connect(function()
     local scriptText = scriptInput.Text
@@ -149,6 +157,11 @@ clearButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 clearButton.Font = Enum.Font.SourceSans
 clearButton.TextSize = 24
 
+-- Add UICorner to Clear Button
+local clearUICorner = Instance.new("UICorner")
+clearUICorner.CornerRadius = UDim.new(0, 10)
+clearUICorner.Parent = clearButton
+
 -- Clear function
 clearButton.MouseButton1Click:Connect(function()
     scriptInput.Text = "" -- Clears the text
@@ -163,6 +176,11 @@ copyButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 copyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 copyButton.Font = Enum.Font.SourceSans
 copyButton.TextSize = 24
+
+-- Add UICorner to Copy Button
+local copyUICorner = Instance.new("UICorner")
+copyUICorner.CornerRadius = UDim.new(0, 10)
+copyUICorner.Parent = copyButton
 
 -- Copy function
 copyButton.MouseButton1Click:Connect(function()
