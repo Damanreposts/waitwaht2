@@ -73,13 +73,10 @@ toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggleButton.Font = Enum.Font.SourceSans
 toggleButton.TextSize = 24
 
--- Add UICorner to make the button rounded
+-- Remove outline and add UICorner to the open button
 local buttonUICorner = Instance.new("UICorner")
 buttonUICorner.CornerRadius = UDim.new(0, 10)
 buttonUICorner.Parent = toggleButton
-
--- Make the Open/Close Button draggable
-makeDraggable(toggleButton)
 
 -- Toggle open/close function
 toggleButton.MouseButton1Click:Connect(function()
