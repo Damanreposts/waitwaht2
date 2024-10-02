@@ -1,0 +1,196 @@
+-- Variables
+local player = game.Players.LocalPlayer
+local guiOpen = false
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ScriptExecutorGui"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
+
+-- Main Frame for buttons
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Parent = screenGui
+mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black background
+mainFrame.BorderColor3 = Color3.fromRGB(0, 255, 255) -- Cyan border
+mainFrame.BorderSizePixel = 3
+mainFrame.Size = UDim2.new(0, 400, 0, 300)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -150) -- Center of the screen
+mainFrame.Visible = false
+
+-- Add UI Corner to make rounded edges
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 15)
+uiCorner.Parent = mainFrame
+
+-- Make the frame draggable
+local function makeDraggable(frame)
+    local dragToggle, dragInput, dragStart, startPos
+    local UIS = game:GetService("UserInputService")
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragToggle = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragToggle = false
+                end
+            end)
+        end
+    end)
+
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if input == dragInput and dragToggle then
+            update(input)
+        end
+    end)
+end
+makeDraggable(mainFrame)
+
+-- Open/Close Button
+local toggleButton = Instance.new("TextButton")
+toggleButton.Name = "ToggleButton"
+toggleButton.Parent = screenGui
+toggleButton.Text = "Open"
+toggleButton.Size = UDim2.new(0, 100, 0, 50)
+toggleButton.Position = UDim2.new(0, 10, 0.5, -25) -- Middle-left side
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Font = Enum.Font.SourceSans
+toggleButton.TextSize = 24
+
+-- Remove outline and add UICorner to the open button
+local buttonUICorner = Instance.new("UICorner")
+buttonUICorner.CornerRadius = UDim.new(0, 10)
+buttonUICorner.Parent = toggleButton
+
+-- Toggle open/close function
+toggleButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = not mainFrame.Visible
+    if mainFrame.Visible then
+        toggleButton.Text = "Close"
+    else
+        toggleButton.Text = "Open"
+    end
+end)
+
+-- Create TextBox for inputting loadstring script
+local scriptInput = Instance.new("TextBox")
+scriptInput.Name = "ScriptInput"
+scriptInput.Parent = mainFrame
+scriptInput.Size = UDim2.new(0.9, 0, 0.5, 0)
+scriptInput.Position = UDim2.new(0.05, 0, 0.05, 0)
+scriptInput.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+scriptInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+scriptInput.PlaceholderText = "Enter script here" -- Changed this text
+scriptInput.Font = Enum.Font.SourceSans
+scriptInput.TextSize = 18
+scriptInput.ClearTextOnFocus = false
+scriptInput.MultiLine = true
+
+-- Button holder for the Execute, Clear, and Copy buttons
+local buttonHolder = Instance.new("Frame")
+buttonHolder.Name = "ButtonHolder"
+buttonHolder.Parent = mainFrame
+buttonHolder.Size = UDim2.new(0.9, 0, 0.2, 0)
+buttonHolder.Position = UDim2.new(0.05, 0, 0.65, 0)
+buttonHolder.BackgroundTransparency = 1 -- Make the holder transparent
+
+-- UIGridLayout to align buttons properly
+local buttonLayout = Instance.new("UIGridLayout")
+buttonLayout.Parent = buttonHolder
+buttonLayout.CellPadding = UDim2.new(0.05, 0, 0, 0) -- Spacing between buttons
+buttonLayout.CellSize = UDim2.new(0.3, 0, 1, 0) -- Each button takes 1/3 of the width
+
+-- Execute Button
+local executeButton = Instance.new("TextButton")
+executeButton.Name = "ExecuteButton"
+executeButton.Text = "Execute"
+executeButton.Parent = buttonHolder
+executeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+executeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+executeButton.Font = Enum.Font.SourceSans
+executeButton.TextSize = 24
+
+-- Execute script function
+executeButton.MouseButton1Click:Connect(function()
+    local scriptText = scriptInput.Text
+    if scriptText and scriptText ~= "" then
+        local success, err = pcall(function()
+            loadstring(scriptText)()
+        end)
+        if not success then
+            warn("Error executing script: " .. err)
+        end
+    end
+end)
+
+-- Clear Button
+local clearButton = Instance.new("TextButton")
+clearButton.Name = "ClearButton"
+clearButton.Text = "Clear"
+clearButton.Parent = buttonHolder
+clearButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+clearButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+clearButton.Font = Enum.Font.SourceSans
+clearButton.TextSize = 24
+
+-- Clear function
+clearButton.MouseButton1Click:Connect(function()
+    scriptInput.Text = "" -- Clears the text
+end)
+
+-- Copy Button
+local copyButton = Instance.new("TextButton")
+copyButton.Name = "CopyButton"
+copyButton.Text = "Copy"
+copyButton.Parent = buttonHolder
+copyButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+copyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+copyButton.Font = Enum.Font.SourceSans
+copyButton.TextSize = 24
+
+-- Copy function
+copyButton.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard(scriptInput.Text) -- Copies the text to clipboard
+    else
+        warn("Your executor doesn't support clipboard functionality.")
+    end
+end)
+
+-- Add a label for "Darkness Executor" under the buttons
+local executorLabel = Instance.new("TextLabel")
+executorLabel.Text = "Darkness Executor"
+executorLabel.Size = UDim2.new(0.9, 0, 0.1, 0)
+executorLabel.Position = UDim2.new(0.05, 0, 0.85, 0) -- Positioned under the buttons
+executorLabel.BackgroundTransparency = 1
+executorLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+executorLabel.Font = Enum.Font.SourceSans
+executorLabel.TextSize = 18
+executorLabel.Parent = mainFrame
+
+-- Add a small text in the bottom right corner
+local versionLabel = Instance.new("TextLabel")
+versionLabel.Text = "Made by likebrowhydide V2" -- Updated this text
+versionLabel.Size = UDim2.new(0.2, 0, 0.05, 0)
+versionLabel.Position = UDim2.new(0.8, 0, 0.95, 0)
+versionLabel.BackgroundTransparency = 1
+versionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+versionLabel.Font = Enum.Font.SourceSans
+versionLabel.TextSize = 14
+versionLabel.Parent = screenGui
