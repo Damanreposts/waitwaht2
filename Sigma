@@ -1,0 +1,143 @@
+-- Services
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+-- Create Main GUI
+local mainGui = Instance.new("ScreenGui")
+mainGui.Name = "MainGui"
+mainGui.Parent = player:WaitForChild("PlayerGui")
+mainGui.ResetOnSpawn = false
+
+-- Create Toggle Button
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 100, 0, 50)
+toggleButton.Position = UDim2.new(0.5, -50, 0.5, -25)
+toggleButton.Text = "Open Menu"
+toggleButton.Parent = mainGui
+toggleButton.AnchorPoint = Vector2.new(0.5, 0.5)
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.TextSize = 14
+
+-- Create Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 250, 0, 400)
+mainFrame.Position = UDim2.new(0.5, -125, 0.5, -200)
+mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+mainFrame.BackgroundTransparency = 0.5
+mainFrame.Parent = mainGui
+mainFrame.Visible = false
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+-- Create Title Label
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0, 50)
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.Text = "Welcome Back, " .. player.Name
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 20
+titleLabel.TextAlign = Enum.TextXAlignment.Center
+titleLabel.BackgroundTransparency = 1
+titleLabel.Parent = mainFrame
+
+-- Create Password Frame
+local passwordFrame = Instance.new("Frame")
+passwordFrame.Size = UDim2.new(1, 0, 0, 100)
+passwordFrame.Position = UDim2.new(0, 0, 0, 60)
+passwordFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+passwordFrame.BackgroundTransparency = 0.7
+passwordFrame.Parent = mainFrame
+
+-- Create Password TextBox
+local passwordBox = Instance.new("TextBox")
+passwordBox.Size = UDim2.new(0.8, 0, 0, 30)
+passwordBox.Position = UDim2.new(0.1, 0, 0.2, 0)
+passwordBox.PlaceholderText = "Enter Password"
+passwordBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+passwordBox.TextSize = 14
+passwordBox.BackgroundTransparency = 1
+passwordBox.Parent = passwordFrame
+
+-- Create Submit Button
+local submitButton = Instance.new("TextButton")
+submitButton.Size = UDim2.new(0.3, 0, 0, 30)
+submitButton.Position = UDim2.new(0.65, 0, 0.2, 0)
+submitButton.Text = "Submit"
+submitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+submitButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+submitButton.Font = Enum.Font.GothamBold
+submitButton.TextSize = 14
+submitButton.Parent = passwordFrame
+
+-- Create Options Frame
+local optionsFrame = Instance.new("Frame")
+optionsFrame.Size = UDim2.new(1, 0, 0, 200)
+optionsFrame.Position = UDim2.new(0, 0, 0, 160)
+optionsFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+optionsFrame.BackgroundTransparency = 0.7
+optionsFrame.Parent = mainFrame
+optionsFrame.Visible = false
+
+-- Create Buttons for Options
+local function createOptionButton(text, position, callback)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, 0, 0, 40)
+    button.Position = position
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 14
+    button.Parent = optionsFrame
+    button.MouseButton1Click:Connect(callback)
+end
+
+createOptionButton("NoClip", UDim2.new(0, 0, 0, 0), function()
+    -- NoClip functionality
+end)
+
+createOptionButton("Invisible", UDim2.new(0, 0, 0, 50), function()
+    -- Invisible functionality
+end)
+
+createOptionButton("Infinite Health", UDim2.new(0, 0, 0, 100), function()
+    -- Infinite Health functionality
+end)
+
+createOptionButton("Infinite Jump", UDim2.new(0, 0, 0, 150), function()
+    -- Infinite Jump functionality
+end)
+
+createOptionButton("Teleport to Player", UDim2.new(0, 0, 0, 200), function()
+    -- Teleport to Player functionality
+end)
+
+-- Create Close Button
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 50, 0, 50)
+closeButton.Position = UDim2.new(1, -50, 0, 0)
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 14
+closeButton.Parent = mainFrame
+closeButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+end)
+
+-- Create Tween for Fade In
+local function fadeIn(object, duration)
+    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+    local goal = {BackgroundTransparency = 0, TextTransparency = 0}
+    local tween = TweenService:Create(object, tweenInfo, goal)
+    tween:Play()
+end
+
+-- Create Tween for Fade Out
+local function fadeOut(object, duration)
+    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
+    local goal0
