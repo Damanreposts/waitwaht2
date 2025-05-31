@@ -1,194 +1,189 @@
---// Sigma Script Hub - GUI with Password Protection and Toggle Features
+-- Mobile-optimized Sigma Script Hub GUI
+-- Made for mobile support with scalable and draggable UI
 
--- Services
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 
--- Settings
-local PASSWORD = "SigmaHub12"
+-- Create ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.Name = "SigmaScriptHub"
+gui.ResetOnSpawn = false
+gui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
 
--- GUI Setup
-local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-ScreenGui.Name = "SigmaScriptHub"
-ScreenGui.ResetOnSpawn = false
-
--- Create UI Corner Function
-local function applyUICorner(gui, radius)
+-- Utility function for making UIs rounded
+local function makeRounded(obj)
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, radius or 10)
-    corner.Parent = gui
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = obj
 end
 
--- Toggle Button
-local ToggleButton = Instance.new("TextButton")
-ToggleButton.Text = "Open"
-ToggleButton.Size = UDim2.new(0, 100, 0, 40)
-ToggleButton.Position = UDim2.new(0, 20, 0.5, -20)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.Font = Enum.Font.GothamBold
-ToggleButton.TextSize = 16
-ToggleButton.Draggable = true
-ToggleButton.Active = true
-ToggleButton.Parent = ScreenGui
-applyUICorner(ToggleButton)
+-- Draggable frame function
+local function makeDraggable(frame)
+    local dragToggle = false
+    local dragInput, dragStart, startPos
 
--- Key UI
-local KeyUI = Instance.new("Frame")
-KeyUI.Size = UDim2.new(0, 300, 0, 150)
-KeyUI.Position = UDim2.new(0.5, -150, 0.5, -75)
-KeyUI.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-KeyUI.Visible = false
-KeyUI.Active = true
-KeyUI.Draggable = true
-KeyUI.Parent = ScreenGui
-applyUICorner(KeyUI, 12)
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragToggle = true
+            dragStart = input.Position
+            startPos = frame.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragToggle = false
+                end
+            end)
+        end
+    end)
 
-local KeyTitle = Instance.new("TextLabel", KeyUI)
-KeyTitle.Text = "SIgma Script Hub v1"
-KeyTitle.Size = UDim2.new(1, 0, 0, 30)
-KeyTitle.Position = UDim2.new(0, 0, 0, 5)
-KeyTitle.BackgroundTransparency = 1
-KeyTitle.TextColor3 = Color3.fromRGB(0, 0, 0)
-KeyTitle.Font = Enum.Font.GothamBold
-KeyTitle.TextSize = 18
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
 
-local KeyInstruction = Instance.new("TextLabel", KeyUI)
-KeyInstruction.Text = "Enter key to continue"
-KeyInstruction.Size = UDim2.new(1, 0, 0, 20)
-KeyInstruction.Position = UDim2.new(0, 0, 0, 35)
-KeyInstruction.BackgroundTransparency = 1
-KeyInstruction.TextColor3 = Color3.fromRGB(0, 0, 0)
-KeyInstruction.Font = Enum.Font.Gotham
-KeyInstruction.TextSize = 16
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragToggle then
+            local delta = input.Position - dragStart
+            frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
 
-local KeyBox = Instance.new("TextBox", KeyUI)
-KeyBox.PlaceholderText = "Enter password"
-KeyBox.Size = UDim2.new(0.8, 0, 0, 30)
-KeyBox.Position = UDim2.new(0.1, 0, 0, 65)
-KeyBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-KeyBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-KeyBox.Font = Enum.Font.Gotham
-KeyBox.TextSize = 14
-applyUICorner(KeyBox, 8)
+-- Toggle button to open/close GUI
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Size = UDim2.new(0, 100, 0, 40)
+toggleBtn.Position = UDim2.new(0, 10, 0.1, 0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggleBtn.Text = "Open"
+toggleBtn.TextColor3 = Color3.new(1, 1, 1)
+toggleBtn.Parent = gui
+makeRounded(toggleBtn)
+makeDraggable(toggleBtn)
 
-local CheckKeyButton = Instance.new("TextButton", KeyUI)
-CheckKeyButton.Text = "Check Key"
-CheckKeyButton.Size = UDim2.new(0.4, -10, 0, 30)
-CheckKeyButton.Position = UDim2.new(0.05, 0, 0, 110)
-CheckKeyButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-CheckKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CheckKeyButton.Font = Enum.Font.GothamBold
-CheckKeyButton.TextSize = 14
-applyUICorner(CheckKeyButton, 8)
+-- Key UI frame
+local keyFrame = Instance.new("Frame")
+keyFrame.Size = UDim2.new(0.85, 0, 0.5, 0)
+keyFrame.Position = UDim2.new(0.075, 0, 0.25, 0)
+keyFrame.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+keyFrame.Visible = false
+keyFrame.Parent = gui
+makeRounded(keyFrame)
+makeDraggable(keyFrame)
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0.2, 0)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.Text = "Sigma Script Hub v1"
+title.TextScaled = true
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.new(0, 0, 0)
+title.Parent = keyFrame
+
+local enterLabel = Instance.new("TextLabel")
+enterLabel.Size = UDim2.new(1, 0, 0.1, 0)
+enterLabel.Position = UDim2.new(0, 0, 0.25, 0)
+enterLabel.Text = "Enter key to continue"
+enterLabel.TextScaled = true
+enterLabel.BackgroundTransparency = 1
+enterLabel.TextColor3 = Color3.new(0, 0, 0)
+enterLabel.Parent = keyFrame
+
+local keyBox = Instance.new("TextBox")
+keyBox.Size = UDim2.new(0.8, 0, 0.1, 0)
+keyBox.Position = UDim2.new(0.1, 0, 0.4, 0)
+keyBox.PlaceholderText = "Enter Key"
+keyBox.Text = ""
+keyBox.TextScaled = true
+keyBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+keyBox.TextColor3 = Color3.new(0, 0, 0)
+keyBox.Parent = keyFrame
+makeRounded(keyBox)
+
+local checkKey = Instance.new("TextButton")
+checkKey.Size = UDim2.new(0.4, -5, 0.1, 0)
+checkKey.Position = UDim2.new(0.05, 0, 0.6, 0)
+checkKey.Text = "Check Key"
+checkKey.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+checkKey.TextColor3 = Color3.new(1, 1, 1)
+checkKey.Parent = keyFrame
+makeRounded(checkKey)
+
+local getKey = Instance.new("TextButton")
+getKey.Size = UDim2.new(0.4, -5, 0.1, 0)
+getKey.Position = UDim2.new(0.55, 0, 0.6, 0)
+getKey.Text = "Get Key"
+getKey.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+getKey.TextColor3 = Color3.new(1, 1, 1)
+getKey.Parent = keyFrame
+makeRounded(getKey)
 
 -- Main GUI
-local MainGUI = Instance.new("Frame")
-MainGUI.Size = UDim2.new(0, 300, 0, 250)
-MainGUI.Position = UDim2.new(0.5, -150, 0.5, -125)
-MainGUI.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MainGUI.Visible = false
-MainGUI.Active = true
-MainGUI.Draggable = true
-MainGUI.Parent = ScreenGui
-applyUICorner(MainGUI, 12)
+local mainGui = Instance.new("Frame")
+mainGui.Size = UDim2.new(0.85, 0, 0.6, 0)
+mainGui.Position = UDim2.new(0.075, 0, 0.2, 0)
+mainGui.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+mainGui.Visible = false
+mainGui.Parent = gui
+makeRounded(mainGui)
+makeDraggable(mainGui)
 
-local NoclipToggle = Instance.new("TextButton", MainGUI)
-NoclipToggle.Text = "Toggle Noclip"
-NoclipToggle.Size = UDim2.new(0.4, 0, 0, 30)
-NoclipToggle.Position = UDim2.new(0.05, 0, 0, 20)
-NoclipToggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-NoclipToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-applyUICorner(NoclipToggle)
+-- Toggle Buttons
+local options = {"Noclip", "Inf Jump", "Inf Health"}
+for i, name in ipairs(options) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.8, 0, 0.1, 0)
+    btn.Position = UDim2.new(0.1, 0, 0.1 * i, 0)
+    btn.Text = name
+    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Parent = mainGui
+    makeRounded(btn)
+end
 
-local InfJumpToggle = Instance.new("TextButton", MainGUI)
-InfJumpToggle.Text = "Toggle Inf Jump"
-InfJumpToggle.Size = UDim2.new(0.4, 0, 0, 30)
-InfJumpToggle.Position = UDim2.new(0.55, 0, 0, 20)
-InfJumpToggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-InfJumpToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-applyUICorner(InfJumpToggle)
+-- Speed and Jump Power Inputs
+local speedBox = Instance.new("TextBox")
+speedBox.Size = UDim2.new(0.35, 0, 0.1, 0)
+speedBox.Position = UDim2.new(0.1, 0, 0.5, 0)
+speedBox.PlaceholderText = "Speed"
+speedBox.Text = ""
+speedBox.TextScaled = true
+speedBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+speedBox.TextColor3 = Color3.new(0, 0, 0)
+speedBox.Parent = mainGui
+makeRounded(speedBox)
 
-local InfHealthToggle = Instance.new("TextButton", MainGUI)
-InfHealthToggle.Text = "Inf Health"
-InfHealthToggle.Size = UDim2.new(0.4, 0, 0, 30)
-InfHealthToggle.Position = UDim2.new(0.05, 0, 0, 60)
-InfHealthToggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-InfHealthToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-applyUICorner(InfHealthToggle)
+local jumpBox = Instance.new("TextBox")
+jumpBox.Size = UDim2.new(0.35, 0, 0.1, 0)
+jumpBox.Position = UDim2.new(0.55, 0, 0.5, 0)
+jumpBox.PlaceholderText = "Jump Power"
+jumpBox.Text = ""
+jumpBox.TextScaled = true
+jumpBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+jumpBox.TextColor3 = Color3.new(0, 0, 0)
+jumpBox.Parent = mainGui
+makeRounded(jumpBox)
 
-local SpeedBox = Instance.new("TextBox", MainGUI)
-SpeedBox.PlaceholderText = "Speed"
-SpeedBox.Size = UDim2.new(0.4, 0, 0, 30)
-SpeedBox.Position = UDim2.new(0.05, 0, 0, 110)
-SpeedBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-SpeedBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-applyUICorner(SpeedBox)
+-- Logic
+local correctPassword = "SigmaHub12"
 
-local JumpBox = Instance.new("TextBox", MainGUI)
-JumpBox.PlaceholderText = "JumpPower"
-JumpBox.Size = UDim2.new(0.4, 0, 0, 30)
-JumpBox.Position = UDim2.new(0.55, 0, 0, 110)
-JumpBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-JumpBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-applyUICorner(JumpBox)
-
--- Button Logic
-ToggleButton.MouseButton1Click:Connect(function()
-    KeyUI.Visible = not KeyUI.Visible
-    ToggleButton.Text = KeyUI.Visible and "Close" or "Open"
-end)
-
-CheckKeyButton.MouseButton1Click:Connect(function()
-    if KeyBox.Text == PASSWORD then
-        TweenService:Create(KeyUI, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+checkKey.MouseButton1Click:Connect(function()
+    if keyBox.Text == correctPassword then
+        TweenService:Create(keyFrame, TweenInfo.new(0.5), {Transparency = 1}):Play()
         wait(0.5)
-        KeyUI.Visible = false
-        MainGUI.Visible = true
+        keyFrame.Visible = false
+        mainGui.Visible = true
+        mainGui.Transparency = 1
+        TweenService:Create(mainGui, TweenInfo.new(0.5), {Transparency = 0}):Play()
+    end
+end)
+
+toggleBtn.MouseButton1Click:Connect(function()
+    if keyFrame.Visible or mainGui.Visible then
+        keyFrame.Visible = false
+        mainGui.Visible = false
+        toggleBtn.Text = "Open"
     else
-        KeyBox.Text = ""
-        KeyBox.PlaceholderText = "Wrong password!"
+        keyFrame.Visible = true
+        toggleBtn.Text = "Close"
     end
 end)
-
--- Feature Logic
-NoclipToggle.MouseButton1Click:Connect(function()
-    for _, v in ipairs(workspace:GetDescendants()) do
-        if v:IsA("BasePart") and v.CanCollide then
-            v.CanCollide = false
-        end
-    end
-end)
-
-InfJumpToggle.MouseButton1Click:Connect(function()
-    UserInputService.JumpRequest:Connect(function()
-        LocalPlayer.Character:FindFirstChildOfClass("Humanoid").UseJumpPower = true
-    end)
-end)
-
-InfHealthToggle.MouseButton1Click:Connect(function()
-    local char = LocalPlayer.Character
-    if char then
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if hum then
-            hum.Health = math.huge
-        end
-    end
-end)
-
-SpeedBox.FocusLost:Connect(function()
-    local value = tonumber(SpeedBox.Text)
-    if value then
-        LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = value
-    end
-end)
-
-JumpBox.FocusLost:Connect(function()
-    local value = tonumber(JumpBox.Text)
-    if value then
-        LocalPlayer.Character:FindFirstChildOfClass("Humanoid").JumpPower = value
-    end
-end)
-
