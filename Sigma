@@ -1,143 +1,117 @@
+--// Sigma Script Hub GUI
+
 -- Services
-local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local mouse = player:GetMouse()
+local LocalPlayer = Players.LocalPlayer
 
--- Create Main GUI
-local mainGui = Instance.new("ScreenGui")
-mainGui.Name = "MainGui"
-mainGui.Parent = player:WaitForChild("PlayerGui")
-mainGui.ResetOnSpawn = false
+-- StarterGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "SigmaScriptHub"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
--- Create Toggle Button
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 100, 0, 50)
-toggleButton.Position = UDim2.new(0.5, -50, 0.5, -25)
-toggleButton.Text = "Open Menu"
-toggleButton.Parent = mainGui
-toggleButton.AnchorPoint = Vector2.new(0.5, 0.5)
-toggleButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.Font = Enum.Font.GothamBold
-toggleButton.TextSize = 14
+-- Main Toggle Button
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Text = "Open"
+ToggleButton.Size = UDim2.new(0, 100, 0, 40)
+ToggleButton.Position = UDim2.new(0, 20, 0.5, -20)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.TextSize = 16
+ToggleButton.Draggable = true
+ToggleButton.Active = true
+ToggleButton.AutoButtonColor = true
+ToggleButton.Parent = ScreenGui
 
--- Create Main Frame
-local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 250, 0, 400)
-mainFrame.Position = UDim2.new(0.5, -125, 0.5, -200)
-mainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-mainFrame.BackgroundTransparency = 0.5
-mainFrame.Parent = mainGui
-mainFrame.Visible = false
-mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+-- Smooth Corner
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = ToggleButton
 
--- Create Title Label
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(1, 0, 0, 50)
-titleLabel.Position = UDim2.new(0, 0, 0, 0)
-titleLabel.Text = "Welcome Back, " .. player.Name
-titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.TextSize = 20
-titleLabel.TextAlign = Enum.TextXAlignment.Center
-titleLabel.BackgroundTransparency = 1
-titleLabel.Parent = mainFrame
+-- GUI Frame
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 300, 0, 200)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+MainFrame.Visible = false
+MainFrame.Parent = ScreenGui
 
--- Create Password Frame
-local passwordFrame = Instance.new("Frame")
-passwordFrame.Size = UDim2.new(1, 0, 0, 100)
-passwordFrame.Position = UDim2.new(0, 0, 0, 60)
-passwordFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-passwordFrame.BackgroundTransparency = 0.7
-passwordFrame.Parent = mainFrame
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.CornerRadius = UDim.new(0, 12)
+FrameCorner.Parent = MainFrame
 
--- Create Password TextBox
-local passwordBox = Instance.new("TextBox")
-passwordBox.Size = UDim2.new(0.8, 0, 0, 30)
-passwordBox.Position = UDim2.new(0.1, 0, 0.2, 0)
-passwordBox.PlaceholderText = "Enter Password"
-passwordBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-passwordBox.TextSize = 14
-passwordBox.BackgroundTransparency = 1
-passwordBox.Parent = passwordFrame
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Text = "SIgma script hub v1"
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 0, 0, 5)
+Title.BackgroundTransparency = 1
+Title.TextColor3 = Color3.fromRGB(0, 0, 0)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.Parent = MainFrame
 
--- Create Submit Button
-local submitButton = Instance.new("TextButton")
-submitButton.Size = UDim2.new(0.3, 0, 0, 30)
-submitButton.Position = UDim2.new(0.65, 0, 0.2, 0)
-submitButton.Text = "Submit"
-submitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-submitButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-submitButton.Font = Enum.Font.GothamBold
-submitButton.TextSize = 14
-submitButton.Parent = passwordFrame
+-- Subtitle
+local Subtitle = Instance.new("TextLabel")
+Subtitle.Text = "Enter key to continue"
+Subtitle.Size = UDim2.new(1, 0, 0, 20)
+Subtitle.Position = UDim2.new(0, 0, 0, 35)
+Subtitle.BackgroundTransparency = 1
+Subtitle.TextColor3 = Color3.fromRGB(0, 0, 0)
+Subtitle.Font = Enum.Font.Gotham
+Subtitle.TextSize = 16
+Subtitle.Parent = MainFrame
 
--- Create Options Frame
-local optionsFrame = Instance.new("Frame")
-optionsFrame.Size = UDim2.new(1, 0, 0, 200)
-optionsFrame.Position = UDim2.new(0, 0, 0, 160)
-optionsFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-optionsFrame.BackgroundTransparency = 0.7
-optionsFrame.Parent = mainFrame
-optionsFrame.Visible = false
+-- Key Box
+local KeyBox = Instance.new("TextBox")
+KeyBox.PlaceholderText = "Enter key here"
+KeyBox.Size = UDim2.new(0.8, 0, 0, 30)
+KeyBox.Position = UDim2.new(0.1, 0, 0, 65)
+KeyBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+KeyBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+KeyBox.Font = Enum.Font.Gotham
+KeyBox.TextSize = 14
+KeyBox.Parent = MainFrame
 
--- Create Buttons for Options
-local function createOptionButton(text, position, callback)
-    local button = Instance.new("TextButton")
-    button.Size = UDim2.new(1, 0, 0, 40)
-    button.Position = position
-    button.Text = text
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-    button.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-    button.Font = Enum.Font.GothamBold
-    button.TextSize = 14
-    button.Parent = optionsFrame
-    button.MouseButton1Click:Connect(callback)
-end
+local BoxCorner = Instance.new("UICorner")
+BoxCorner.CornerRadius = UDim.new(0, 8)
+BoxCorner.Parent = KeyBox
 
-createOptionButton("NoClip", UDim2.new(0, 0, 0, 0), function()
-    -- NoClip functionality
+-- Check Key Button
+local CheckKey = Instance.new("TextButton")
+CheckKey.Text = "Check Key"
+CheckKey.Size = UDim2.new(0.4, -10, 0, 30)
+CheckKey.Position = UDim2.new(0.05, 0, 0, 110)
+CheckKey.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+CheckKey.TextColor3 = Color3.fromRGB(255, 255, 255)
+CheckKey.Font = Enum.Font.GothamBold
+CheckKey.TextSize = 14
+CheckKey.Parent = MainFrame
+
+local CheckCorner = Instance.new("UICorner")
+CheckCorner.CornerRadius = UDim.new(0, 8)
+CheckCorner.Parent = CheckKey
+
+-- Get Key Button
+local GetKey = Instance.new("TextButton")
+GetKey.Text = "Get Key"
+GetKey.Size = UDim2.new(0.4, -10, 0, 30)
+GetKey.Position = UDim2.new(0.55, 0, 0, 110)
+GetKey.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+GetKey.TextColor3 = Color3.fromRGB(255, 255, 255)
+GetKey.Font = Enum.Font.GothamBold
+GetKey.TextSize = 14
+GetKey.Parent = MainFrame
+
+local GetCorner = Instance.new("UICorner")
+GetCorner.CornerRadius = UDim.new(0, 8)
+GetCorner.Parent = GetKey
+
+-- Toggle Functionality
+ToggleButton.MouseButton1Click:Connect(function()
+	MainFrame.Visible = not MainFrame.Visible
+	ToggleButton.Text = MainFrame.Visible and "Close" or "Open"
 end)
-
-createOptionButton("Invisible", UDim2.new(0, 0, 0, 50), function()
-    -- Invisible functionality
-end)
-
-createOptionButton("Infinite Health", UDim2.new(0, 0, 0, 100), function()
-    -- Infinite Health functionality
-end)
-
-createOptionButton("Infinite Jump", UDim2.new(0, 0, 0, 150), function()
-    -- Infinite Jump functionality
-end)
-
-createOptionButton("Teleport to Player", UDim2.new(0, 0, 0, 200), function()
-    -- Teleport to Player functionality
-end)
-
--- Create Close Button
-local closeButton = Instance.new("TextButton")
-closeButton.Size = UDim2.new(0, 50, 0, 50)
-closeButton.Position = UDim2.new(1, -50, 0, 0)
-closeButton.Text = "X"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-closeButton.Font = Enum.Font.GothamBold
-closeButton.TextSize = 14
-closeButton.Parent = mainFrame
-closeButton.MouseButton1Click:Connect(function()
-    mainFrame.Visible = false
-end)
-
--- Create Tween for Fade In
-local function fadeIn(object, duration)
-    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-    local goal = {BackgroundTransparency = 0, TextTransparency = 0}
-    local tween = TweenService:Create(object, tweenInfo, goal)
-    tween:Play()
-end
-
--- Create Tween for Fade Out
-local function fadeOut(object, duration)
-    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.In)
-    local goal0
