@@ -1,1 +1,27 @@
+local player = game.Players.LocalPlayer local UserInputService = game:GetService("UserInputService") local TweenService = game:GetService("TweenService")
+
+-- GUI References local ui = script.Parent local main = ui:WaitForChild("Main") local openButton = ui:WaitForChild("Open") local spinButton = ui:WaitForChild("Spin") local lowGravityButton = ui:WaitForChild("LowGravity") local keySystem = ui:WaitForChild("KeySystem") local submitKeyButton = keySystem:WaitForChild("SubmitKey") local keyInput = keySystem:WaitForChild("KeyBox") local keyInfo = keySystem:WaitForChild("Info")
+
+-- Configuration local correctKey = "Ellent"  -- Change to your desired key local verified = false local gravityOriginal = workspace.Gravity
+
+-- Functions local function toggleMainUI(state) main.Visible = state openButton.Visible = not state end
+
+local function verifyKey() if keyInput.Text == correctKey then verified = true keySystem.Visible = false toggleMainUI(true) else keyInfo.Text = "Incorrect key. Try again." end end
+
+local function spinPlayer() if not verified then return end local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart") if hrp then local spin = Instance.new("BodyAngularVelocity") spin.AngularVelocity = Vector3.new(0, 10, 0) spin.MaxTorque = Vector3.new(0, math.huge, 0) spin.P = 1250 spin.Parent = hrp task.delay(2, function() spin:Destroy() end) end end
+
+local function toggleLowGravity() if not verified then return end workspace.Gravity = workspace.Gravity == gravityOriginal and gravityOriginal / 5 or gravityOriginal end
+
+-- Button Connections submitKeyButton.MouseButton1Click:Connect(verifyKey) openButton.MouseButton1Click:Connect(function() if verified then toggleMainUI(true) else keySystem.Visible = true end end)
+
+main:WaitForChild("Close").MouseButton1Click:Connect(function() toggleMainUI(false) end)
+
+spinButton.MouseButton1Click:Connect(spinPlayer) lowGravityButton.MouseButton1Click:Connect(toggleLowGravity)
+
+-- UI Styling (Professional Look) for _, button in ipairs(ui:GetDescendants()) do if button:IsA("TextButton") or button:IsA("TextBox") then button.BackgroundColor3 = Color3.fromRGB(30, 30, 30) button.TextColor3 = Color3.fromRGB(255, 255, 255) button.BorderSizePixel = 0 button.Font = Enum.Font.Gotham button.TextScaled = true button.TextWrapped = true local uicorner = Instance.new("UICorner") uicorner.CornerRadius = UDim.new(0, 6) uicorner.Parent = button end end
+
+main.BackgroundColor3 = Color3.fromRGB(20, 20, 20) keySystem.BackgroundColor3 = Color3.fromRGB(20, 20, 20) openButton.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+
+-- Initial UI State main.Visible = false openButton.Visible = true keySystem.Visible = false
+
 
